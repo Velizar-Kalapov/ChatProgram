@@ -17,6 +17,8 @@ public class ClientHandler implements Runnable {
 	public boolean isLoggedIn;
 	Socket socket;
 	
+	
+	
 	public ClientHandler(Socket socket, int id, DataInputStream in, DataOutputStream out) {
 		this.socket = socket;
 		this.id = id;
@@ -24,13 +26,66 @@ public class ClientHandler implements Runnable {
 		this.out = out;
 		isLoggedIn = true;
 	}
-	
-	public int getId() {
-		return this.id;
+
+	public ClientHandler(Socket socket, int id) throws IOException {
+		this.socket = socket;
+		this.id = id;
+		this.in = new DataInputStream(socket.getInputStream());
+		this.out = new DataOutputStream(socket.getOutputStream());
+		isLoggedIn = true;
 	}
 	
 	
 	
+
+	@Override
+	public void run() {
+		String received;
+		while(true) {
+
+			try{
+				received = in.readUTF();
+				System.out.println(received);
+
+				if(received.equals("/logout")) {
+					System.out.println("Client " + this.id + " Exiting");
+					break;
+				}
+
+				for (ClientHandler c : ChatServer.clientList) {
+					if(c.isLoggedIn) {
+						System.out.println("Sent to: " + c.getId());
+						c.getOut().writeUTF(this.id + " : "  + received);
+					}
+				}
+				
+			}catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+			
+		}
+		
+		
+		this.isLoggedIn = false;
+		try {
+			System.out.println("Closing connection");
+			this.socket.close();
+			in.close();
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public int getId() {
+		return this.id;
+	}
+
+
+
 	public DataInputStream getIn() {
 		return in;
 	}
@@ -47,51 +102,5 @@ public class ClientHandler implements Runnable {
 		this.out = out;
 	}
 
-	@Override
-	public void run() {
-		String received;
-		while(true ) {
-			
-			try{
-				received = in.readUTF();
-				System.out.println(received);
-				
-				if(received.equals("/logout")) {
-					this.isLoggedIn = false;
-					System.out.println("Exiting");
-					this.socket.close();
-					break;
-				}
-			
-				for (ClientHandler c : ChatServer.clientList) {
-					System.out.println("Sent to: " + c.getId());
-					if(c.isLoggedIn) {
-						c.getOut().writeUTF(this.id + " : "  + received);
-					}
-				}
-			
-			
-			}catch (EOFException e) {
-				System.out.println(" client left the chat");
-				try {
-					this.out.close();
-					this.in.close();
-					this.isLoggedIn = false;
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				break;
-			}
-			
-			catch (IOException e) {
-				
-				e.printStackTrace();
-				
-			}
-		
-		}
-	}
-	
-	
+
 }
