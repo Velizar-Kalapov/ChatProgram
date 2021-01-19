@@ -14,7 +14,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
-public class chatWindow {
+public class ChatWindow {
 
 	private JFrame frame;
 	private JTextField textField;
@@ -25,19 +25,21 @@ public class chatWindow {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
-					chatWindow window = new chatWindow();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+					ChatWindow window;
+					try {
+						window = new ChatWindow();
+						window.frame.setVisible(true);
+					} catch (IOException e) {
+						System.err.println("Caught IOException");
+					}
+				
 			}
 		});
 	}
 
 
 
-	public chatWindow() throws UnknownHostException, IOException {
+	public ChatWindow() throws UnknownHostException, IOException {
 		initialize();
 		client = new Client(textArea);
 	}
@@ -65,7 +67,7 @@ public class chatWindow {
 						 client.getOut().writeUTF(message);
 						 textField.setText("");
 					 } catch (IOException e1) {
-						 e1.printStackTrace();
+						 System.err.println("Caught IOException while sending message");
 					 }
 
 				}
@@ -90,7 +92,7 @@ public class chatWindow {
 		    		try {
 						client.disconnect();
 					} catch (IOException e) {
-						e.printStackTrace();
+						System.err.println("Caught IOException while disconnecting");
 					}
 		            System.exit(0);
 

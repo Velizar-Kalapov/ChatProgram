@@ -41,26 +41,26 @@ public class ClientHandler implements Runnable {
 	@Override
 	public void run() {
 		String received;
+		System.out.println("Client " + this.id + " connected" );
 		while(true) {
-
+			
 			try{
 				received = in.readUTF();
-				System.out.println(received);
 
 				if(received.equals("/logout")) {
 					System.out.println("Client " + this.id + " Exiting");
 					break;
 				}
+				
 
 				for (ClientHandler c : ChatServer.clientList) {
 					if(c.isLoggedIn) {
-						System.out.println("Sent to: " + c.getId());
 						c.getOut().writeUTF(this.id + " : "  + received);
 					}
 				}
 				
 			}catch (IOException e) {
-				e.printStackTrace();
+				System.err.println("Caught IOException");
 				break;
 			}
 			
@@ -69,12 +69,12 @@ public class ClientHandler implements Runnable {
 		
 		this.isLoggedIn = false;
 		try {
-			System.out.println("Closing connection");
+			System.out.println("Closing connection for client: " + this.id);
 			this.socket.close();
 			in.close();
 			out.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Caught IOException while closing");
 		}
 		
 		

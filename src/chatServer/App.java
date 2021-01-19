@@ -10,7 +10,7 @@ public class App {
 		try {
 			ChatServer chatServer = new ChatServer(9090);
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.err.println("Caught IOException while starting server");
 		}
 
 	}

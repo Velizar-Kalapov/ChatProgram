@@ -24,7 +24,7 @@ import javax.swing.JTextArea;
 						textArea.append(recieved);
 
 					} catch (IOException e) {
-						e.printStackTrace();
+						System.out.println("Caught IOException when reading");
 						break;
 					}
 

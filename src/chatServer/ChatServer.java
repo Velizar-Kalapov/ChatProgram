@@ -32,18 +32,11 @@ public class ChatServer {
 
 			t.start();
 			counter ++;
-			printClients();
 		}
 
 
 	}
 
-
-	private void printClients() {
-		for (ClientHandler c : clientList) {
-			System.out.println(c.getId());
-		}
-	}
 
 
 

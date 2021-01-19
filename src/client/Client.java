@@ -54,7 +54,7 @@ public class Client {
 							break;
 							
 						} catch (IOException e) {
-							e.printStackTrace();
+							System.err.println("Caught IOException while reading");
 							break;
 						}
 					}
@@ -63,7 +63,7 @@ public class Client {
 						in.close();
 						out.close();
 					} catch (IOException e) {
-						e.printStackTrace();
+						System.err.println("Caught IOException while closing");
 					}	
 			   }
 				
