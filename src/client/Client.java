@@ -14,15 +14,16 @@ import chatServer.ChatServer;
 
 public class Client {
 
-	static int ServerPort = 9090;
-	DataInputStream in;
-	DataOutputStream out;
-	Socket socket;
-	Boolean isLogged;
+	private static int ServerPort = 9090;
+	private static String host = "localhost";
+	private DataInputStream in;
+	private DataOutputStream out;
+	private Socket socket;
+	private Boolean isLogged;
+	
 
 	public Client() throws UnknownHostException, IOException {
-
-		socket = new Socket("127.0.0.1", ServerPort);
+		socket = new Socket(host, ServerPort);
 		in = new DataInputStream(socket.getInputStream());
 		out = new DataOutputStream(socket.getOutputStream());
 		System.out.println("Connected");
@@ -32,10 +33,13 @@ public class Client {
 	
 	
 	public Client(JTextArea textArea) throws UnknownHostException, IOException {
+		
 
-		socket = new Socket("127.0.0.1", ServerPort);
+		socket = new Socket(host, ChatServer.getPort());
+		
 		in = new DataInputStream(socket.getInputStream());
 		out = new DataOutputStream(socket.getOutputStream());
+		
 		System.out.println("Connected");
 		
 		isLogged = true;
@@ -43,6 +47,7 @@ public class Client {
 		Thread thread = new Thread(new Runnable() {
 			@Override 
 				public void run() {
+				try {
 					while(true) {
 						try {
 							while (isLogged) {
@@ -58,19 +63,21 @@ public class Client {
 							break;
 						}
 					}
-					try {
-						socket.close();
-						in.close();
-						out.close();
-					} catch (IOException e) {
-						System.err.println("Caught IOException while closing");
-					}	
+				}finally {
+						try {
+							socket.close();
+							in.close();
+							out.close();
+						} catch (IOException e) {
+							System.err.println("Caught IOException while closing");
+						}
+				}		
 			   }
 				
 		});
 		
 		thread.start();
-
+		
 	}
 	
 
@@ -92,6 +99,10 @@ public class Client {
 
 	public Socket getSocket() {
 		return socket;
+	}
+	
+	public static void setServerPort(int port) {
+		ServerPort = port;
 	}
 
 

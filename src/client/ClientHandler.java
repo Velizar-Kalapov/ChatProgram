@@ -42,41 +42,41 @@ public class ClientHandler implements Runnable {
 	public void run() {
 		String received;
 		System.out.println("Client " + this.id + " connected" );
-		while(true) {
+		try {
+			while(true) {
 			
-			try{
-				received = in.readUTF();
+				try{
+					received = in.readUTF();
 
-				if(received.equals("/logout")) {
-					System.out.println("Client " + this.id + " Exiting");
+					if(received.equals("/logout")) {
+						System.out.println("Client " + this.id + " Exiting");
+						break;
+					}
+				
+					for (ClientHandler c : ChatServer.clientList) {
+						if(c.isLoggedIn) {
+							c.getOut().writeUTF(this.id + " : "  + received);
+						}
+					}
+				
+				}catch (IOException e) {
+					System.err.println("Caught IOException");
 					break;
 				}
-				
-
-				for (ClientHandler c : ChatServer.clientList) {
-					if(c.isLoggedIn) {
-						c.getOut().writeUTF(this.id + " : "  + received);
-					}
-				}
-				
-			}catch (IOException e) {
-				System.err.println("Caught IOException");
-				break;
-			}
 			
-		}
+			}
 		
-		
-		this.isLoggedIn = false;
-		try {
-			System.out.println("Closing connection for client: " + this.id);
-			this.socket.close();
-			in.close();
-			out.close();
-		} catch (IOException e) {
+		} finally {
+			this.isLoggedIn = false;
+			try {
+				System.out.println("Closing connection for client: " + this.id);
+				this.socket.close();
+				in.close();
+				out.close();
+			} catch (IOException e) {
 			System.err.println("Caught IOException while closing");
+			}
 		}
-		
 		
 	}
 	
