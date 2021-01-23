@@ -1,6 +1,5 @@
 package client;
 
-import java.io.Console;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,7 +7,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 import chatServer.ChatServer;
 
@@ -20,7 +18,7 @@ public class Client {
 	private DataOutputStream out;
 	private Socket socket;
 	private Boolean isLogged;
-	
+	private String name;
 
 	public Client() throws UnknownHostException, IOException {
 		socket = new Socket(host, ServerPort);
@@ -32,13 +30,20 @@ public class Client {
 	
 	
 	
-	public Client(JTextArea textArea) throws UnknownHostException, IOException {
+	public Client(String name, JTextArea textArea) throws UnknownHostException, IOException {
 		
-
+		if (name == null) {
+			this.name = new String("Guest");
+		}else {
+			this.name = name;
+		}
+		
 		socket = new Socket(host, ChatServer.getPort());
 		
 		in = new DataInputStream(socket.getInputStream());
 		out = new DataOutputStream(socket.getOutputStream());
+		
+		out.writeUTF(this.name);
 		
 		System.out.println("Connected");
 		

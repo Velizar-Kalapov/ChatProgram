@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import client.ChatWindow;
-import client.Client;
 
 public class App {
 

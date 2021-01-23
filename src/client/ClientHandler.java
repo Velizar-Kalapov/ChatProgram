@@ -2,7 +2,6 @@ package client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -16,22 +15,32 @@ public class ClientHandler implements Runnable {
 	private DataOutputStream out;
 	public boolean isLoggedIn;
 	Socket socket;
+	private String username;
 	
 	
-	
-	public ClientHandler(Socket socket, int id, DataInputStream in, DataOutputStream out) {
-		this.socket = socket;
-		this.id = id;
-		this.in = in;
-		this.out = out;
-		isLoggedIn = true;
-	}
 
-	public ClientHandler(Socket socket, int id) throws IOException {
+	public ClientHandler(Socket socket) throws IOException {
 		this.socket = socket;
-		this.id = id;
+		//this.id = id;
 		this.in = new DataInputStream(socket.getInputStream());
 		this.out = new DataOutputStream(socket.getOutputStream());
+		
+		String receivedName = in.readUTF();
+		
+		int duplicateCount = 0;
+		
+		for (ClientHandler c : ChatServer.clientList) {
+			if(c.username.equals(receivedName)) {
+				duplicateCount++;
+			}
+		}
+		
+		if(duplicateCount > 0) {
+			receivedName = new StringBuilder(receivedName).append("(").append(duplicateCount).append(")").toString();
+		}
+		
+		this.username = receivedName;
+		
 		isLoggedIn = true;
 	}
 	
@@ -41,21 +50,20 @@ public class ClientHandler implements Runnable {
 	@Override
 	public void run() {
 		String received;
-		System.out.println("Client " + this.id + " connected" );
+		System.out.println("Client " + this.username + " connected" );
 		try {
 			while(true) {
-			
 				try{
 					received = in.readUTF();
 
 					if(received.equals("/logout")) {
-						System.out.println("Client " + this.id + " Exiting");
+						System.out.println("Client " + this.username + " Exiting");
 						break;
 					}
 				
 					for (ClientHandler c : ChatServer.clientList) {
 						if(c.isLoggedIn) {
-							c.getOut().writeUTF(this.id + " : "  + received);
+							c.getOut().writeUTF(this.username + " : "  + received);
 						}
 					}
 				
@@ -69,7 +77,7 @@ public class ClientHandler implements Runnable {
 		} finally {
 			this.isLoggedIn = false;
 			try {
-				System.out.println("Closing connection for client: " + this.id);
+				System.out.println("Closing connection for client: " + this.username);
 				this.socket.close();
 				in.close();
 				out.close();
@@ -83,8 +91,6 @@ public class ClientHandler implements Runnable {
 	public int getId() {
 		return this.id;
 	}
-
-
 
 	public DataInputStream getIn() {
 		return in;

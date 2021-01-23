@@ -2,10 +2,10 @@ package client;
 
 import java.awt.EventQueue;
 import java.io.IOException;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -21,6 +21,7 @@ public class ChatWindow implements Runnable {
 	private JTextField textField;
 	private Client client;
 	private JTextArea textArea;
+	private String name;
 
 
 	public static void main(String[] args) {
@@ -30,7 +31,8 @@ public class ChatWindow implements Runnable {
 					try {
 						window = new ChatWindow();
 						window.frame.setVisible(true);
-						window.client = new Client(window.textArea);
+						window.name = JOptionPane.showInputDialog(null,"Enter Name");
+						window.client = new Client(window.name, window.textArea);
 					} catch (IOException e) {
 						System.err.println("Caught IOException");
 						System.exit(0);
@@ -42,11 +44,13 @@ public class ChatWindow implements Runnable {
 	
 	@Override
 	public void run() {
+		
 		ChatWindow chatWindow;
 		try {
 			chatWindow = new ChatWindow();
+			name = JOptionPane.showInputDialog(null,"Enter Name");
+			chatWindow.client = new Client(name, chatWindow.textArea);
 			chatWindow.frame.setVisible(true);
-			chatWindow.client = new Client(chatWindow.textArea);
 		} catch (IOException e) {
 			System.out.println("IOException when creating chat window");
 		}

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import client.ClientHandler;
@@ -45,16 +44,17 @@ public class ChatServer {
 
 	private void listenForClients() throws IOException {
 		while(true) {
+			
 			Socket s = serverSocket.accept();
 
-			ClientHandler clientHandler = new ClientHandler(s, counter);
+			ClientHandler clientHandler = new ClientHandler(s);
 			
 			Thread  t = new Thread(clientHandler);
 
 			clientList.add(clientHandler);
 
 			t.start();
-			counter ++;
+			//counter ++;
 		}
 	}
 	
