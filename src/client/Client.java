@@ -1,5 +1,6 @@
 package client;
 
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class Client {
 	
 	public Client(String name, JTextArea textArea) throws UnknownHostException, IOException {
 		
-		if (name == null) {
+		if (name == null || name.trim().equals("")) {
 			this.name = new String("Guest");
 		}else {
 			this.name = name;
@@ -45,14 +46,16 @@ public class Client {
 		
 		out.writeUTF(this.name);
 		
-		System.out.println("Connected");
-		
 		isLogged = true;
 		
 		Thread thread = new Thread(new Runnable() {
 			@Override 
 				public void run() {
+				
 				try {
+					
+					textArea.append(" Welcome " + name + "\n");
+					
 					while(true) {
 						try {
 							while (isLogged) {
@@ -68,6 +71,7 @@ public class Client {
 							break;
 						}
 					}
+					
 				}finally {
 						try {
 							socket.close();
@@ -110,5 +114,8 @@ public class Client {
 		ServerPort = port;
 	}
 
+	public String getName() {
+		return name;
+	}
 
 }

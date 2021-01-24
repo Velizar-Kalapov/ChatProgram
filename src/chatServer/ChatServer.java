@@ -12,7 +12,6 @@ import client.ClientHandler;
 public class ChatServer {
 	ServerSocket serverSocket;
 	public static ArrayList<ClientHandler> clientList = new ArrayList<>();
-	public static int counter = 0;
 	private String host = "localhost";
 	private static int port = 9090;
 
@@ -37,7 +36,7 @@ public class ChatServer {
 	public ChatServer() throws IOException {
 		serverSocket = new ServerSocket(0, 0, InetAddress.getByName(host));
 		port = serverSocket.getLocalPort();
-		System.out.println(port);
+		System.out.println("Server runing on: " + port);
 		listenForClients();
 	}
 		
@@ -54,7 +53,6 @@ public class ChatServer {
 			clientList.add(clientHandler);
 
 			t.start();
-			//counter ++;
 		}
 	}
 	

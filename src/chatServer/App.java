@@ -13,19 +13,20 @@ public class App {
 			Thread serverThread = new Thread(new Runnable() {
 				@Override 
 					public void run() {
-					try  {
-						ChatServer chatServer = new ChatServer();
-					} catch (IOException e) {
-						e.printStackTrace();
-						System.out.println("IOException when creating server");
-					}		
-				}
+						try  {
+							ChatServer chatServer = new ChatServer();
+						} catch (IOException e) {
+							e.printStackTrace();
+							System.out.println("IOException when creating server");
+						}		
+					}
 			});
 			
 			serverThread.start();
 			
 			Thread user1 = new Thread(new ChatWindow());
 			Thread user2 = new Thread(new ChatWindow());
+			
 			user1.start();
 			user2.start();
 

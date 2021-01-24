@@ -16,32 +16,23 @@ public class ClientHandler implements Runnable {
 	public boolean isLoggedIn;
 	Socket socket;
 	private String username;
+	private String receivedName;
 	
 	
 
 	public ClientHandler(Socket socket) throws IOException {
 		this.socket = socket;
-		//this.id = id;
 		this.in = new DataInputStream(socket.getInputStream());
 		this.out = new DataOutputStream(socket.getOutputStream());
 		
-		String receivedName = in.readUTF();
-		
-		int duplicateCount = 0;
-		
-		for (ClientHandler c : ChatServer.clientList) {
-			if(c.username.equals(receivedName)) {
-				duplicateCount++;
-			}
-		}
-		
-		if(duplicateCount > 0) {
-			receivedName = new StringBuilder(receivedName).append("(").append(duplicateCount).append(")").toString();
-		}
-		
+		receivedName = in.readUTF();
+	
 		this.username = receivedName;
 		
 		isLoggedIn = true;
+		
+		sendMessageToUsers(" " + this.username + " connected");
+		
 	}
 	
 	
@@ -54,6 +45,7 @@ public class ClientHandler implements Runnable {
 		try {
 			while(true) {
 				try{
+					
 					received = in.readUTF();
 
 					if(received.equals("/logout")) {
@@ -61,14 +53,16 @@ public class ClientHandler implements Runnable {
 						break;
 					}
 				
+					
 					for (ClientHandler c : ChatServer.clientList) {
 						if(c.isLoggedIn) {
-							c.getOut().writeUTF(this.username + " : "  + received);
+							c.getOut().writeUTF(received);
 						}
 					}
 				
 				}catch (IOException e) {
 					System.err.println("Caught IOException");
+					e.printStackTrace();
 					break;
 				}
 			
@@ -77,6 +71,7 @@ public class ClientHandler implements Runnable {
 		} finally {
 			this.isLoggedIn = false;
 			try {
+				sendMessageToUsers(" " + this.username + " left the chat");
 				System.out.println("Closing connection for client: " + this.username);
 				this.socket.close();
 				in.close();
@@ -86,6 +81,31 @@ public class ClientHandler implements Runnable {
 			}
 		}
 		
+	}
+	
+	
+	private void sendMessageToUsers(String message) throws IOException {
+		for (ClientHandler c : ChatServer.clientList) {
+			if(c.isLoggedIn) {
+				c.getOut().writeUTF(message);
+			}
+		}
+	}
+	
+	public static boolean duplicateUsername(String username) throws IOException { 
+		for (ClientHandler c : ChatServer.clientList) {
+			if(c.getUsername().equals(username)) {
+				return true;
+			}
+		}
+		return false;
+	}
+		
+	
+	public static void showUsers() { 
+		for (ClientHandler c : ChatServer.clientList) {
+			System.out.println(c.username);
+		}
 	}
 	
 	public int getId() {
@@ -107,6 +127,15 @@ public class ClientHandler implements Runnable {
 	public void setOut(DataOutputStream out) {
 		this.out = out;
 	}
+	
+	public String getReceivedName() {
+		return receivedName;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+	
 
 
 }
