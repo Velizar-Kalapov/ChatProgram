@@ -39,6 +39,8 @@ public class ChatWindow implements Runnable {
 					} catch (IOException e) {
 						System.err.println("Caught IOException");
 						System.exit(0);
+						
+						
 					}
 				
 			}
